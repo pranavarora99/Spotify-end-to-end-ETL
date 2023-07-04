@@ -5,10 +5,7 @@ from datetime import datetime
 from io import StringIO
 import pandas as pd
 
-
-# Add the SQS queue URL here
 SQS_QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/028769524714/spotify_queue'
-
 sqs = boto3.client('sqs')
 
 def album(data):
@@ -99,9 +96,7 @@ def lambda_handler(event, context):
         song_df['date_added'] = pd.to_datetime(song_df['date_added'])
         album_df['album_release_date'] = pd.to_datetime(album_df['album_release_date'])
         
-        # Replace the code for putting transformed data in S3 with code to send it to SQS
-    
-        # Send song data to SQS
+        # Send song data via SQS
         song_key = "transformed-data/song-view/songs_transformed_" + str(datetime.now()) + ".csv"
         song_buffer = StringIO()
         song_df.to_csv(song_buffer, index=False)
@@ -111,7 +106,7 @@ def lambda_handler(event, context):
             MessageBody=song_content
         )
         
-        # Send album data to SQS
+        # Send album data via SQS
         album_key = "transformed-data/album-view/album_transformed_" + str(datetime.now()) + ".csv"
         album_buffer = StringIO()
         album_df.to_csv(album_buffer, index=False)
@@ -121,7 +116,7 @@ def lambda_handler(event, context):
             MessageBody=album_content
         )
         
-        # Send artist data to SQS
+        # Send artist data via SQS
         artist_key = "transformed-data/artist-view/artist_transformed_" + str(datetime.now()) + ".csv"
         artist_buffer = StringIO()
         artist_df.to_csv(artist_buffer, index=False)
